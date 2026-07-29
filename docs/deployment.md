@@ -49,3 +49,15 @@ uvicorn astra_os.main:app --host 0.0.0.0 --port $PORT
 - [ ] OAuth redirect URLs point at live domains.
 - [ ] CI passes on the deployment branch.
 - [ ] HTTPS is enforced for both web and API.
+
+
+## Automated Vercel deployment
+
+The repository includes `.github/workflows/deploy-web.yml` and `scripts/deploy_web.sh` for live web publishing once the owner adds `VERCEL_TOKEN` as a GitHub Actions secret. Codex cannot create that token or access your Vercel account, but after the secret is configured the workflow can be run manually from GitHub Actions or automatically on pushes to `main` that touch `apps/web/**`.
+
+Manual local deployment is also available:
+
+```bash
+export VERCEL_TOKEN=<your-vercel-token>
+./scripts/deploy_web.sh
+```
