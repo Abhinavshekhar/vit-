@@ -16,6 +16,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Install Python test dependencies
+        run: python -m pip install --upgrade pip pytest
       - name: Run unit tests
         run: python -m pytest tests
       - name: Compile core modules
