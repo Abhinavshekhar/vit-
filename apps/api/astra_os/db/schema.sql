@@ -58,6 +58,31 @@ CREATE TABLE tasks (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+
+CREATE TABLE deadlines (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  course_id UUID REFERENCES courses(id),
+  title TEXT NOT NULL,
+  due_at TIMESTAMPTZ NOT NULL,
+  source TEXT NOT NULL,
+  confidence NUMERIC(4,3) NOT NULL DEFAULT 0.5,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE assignments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  deadline_id UUID REFERENCES deadlines(id) ON DELETE SET NULL,
+  task_id UUID REFERENCES tasks(id) ON DELETE SET NULL,
+  course_id UUID REFERENCES courses(id),
+  title TEXT NOT NULL,
+  instructions TEXT,
+  submission_url TEXT,
+  estimated_minutes INT NOT NULL DEFAULT 120,
+  difficulty INT NOT NULL DEFAULT 3 CHECK(difficulty BETWEEN 1 AND 5),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 CREATE TABLE task_dependencies (
   task_id UUID NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
   depends_on_task_id UUID NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
@@ -155,3 +180,19 @@ CREATE TABLE audit_logs (
   ip_hash TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+
+CREATE INDEX idx_oauth_accounts_user_provider ON oauth_accounts(user_id, provider);
+CREATE INDEX idx_courses_user_code ON courses(user_id, code);
+CREATE INDEX idx_attendance_records_course_recorded ON attendance_records(course_id, recorded_at DESC);
+CREATE INDEX idx_tasks_user_deadline ON tasks(user_id, deadline) WHERE status <> 'done';
+CREATE INDEX idx_tasks_user_status_priority ON tasks(user_id, status, priority DESC);
+CREATE INDEX idx_deadlines_user_due_at ON deadlines(user_id, due_at);
+CREATE INDEX idx_assignments_course_created ON assignments(course_id, created_at DESC);
+CREATE INDEX idx_events_user_starts_at ON events(user_id, starts_at);
+CREATE INDEX idx_emails_user_received_at ON emails(user_id, received_at DESC);
+CREATE INDEX idx_calendar_items_user_starts_at ON calendar_items(user_id, starts_at);
+CREATE INDEX idx_notifications_user_scheduled ON notifications(user_id, scheduled_at) WHERE status = 'pending';
+CREATE INDEX idx_analytics_daily_user_day ON analytics_daily(user_id, day DESC);
+CREATE INDEX idx_ai_memory_user_type ON ai_memory(user_id, memory_type);
+CREATE INDEX idx_audit_logs_user_created ON audit_logs(user_id, created_at DESC);

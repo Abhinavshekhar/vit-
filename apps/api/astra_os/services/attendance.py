@@ -8,6 +8,16 @@ class AttendanceSnapshot:
     total: int
     minimum_percent: float = 75.0
 
+    def __post_init__(self) -> None:
+        if self.attended < 0:
+            raise ValueError("attended must be non-negative")
+        if self.total < 0:
+            raise ValueError("total must be non-negative")
+        if self.attended > self.total:
+            raise ValueError("attended cannot exceed total")
+        if not 0 < self.minimum_percent < 100:
+            raise ValueError("minimum_percent must be greater than 0 and less than 100")
+
     @property
     def percent(self) -> float:
         return 100.0 if self.total == 0 else round(self.attended / self.total * 100, 2)

@@ -9,3 +9,12 @@ def test_recommend_attend_below_threshold():
     recommendation = attendance_recommendation(AttendanceSnapshot(attended=6, total=10, minimum_percent=75))
     assert recommendation["action"] == "attend"
     assert recommendation["classes_needed"] > 0
+
+
+def test_attendance_snapshot_rejects_impossible_values():
+    try:
+        AttendanceSnapshot(attended=12, total=10, minimum_percent=75)
+    except ValueError as exc:
+        assert "attended cannot exceed total" in str(exc)
+    else:
+        raise AssertionError("expected invalid attendance snapshot to fail")
