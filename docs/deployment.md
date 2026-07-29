@@ -53,11 +53,15 @@ uvicorn astra_os.main:app --host 0.0.0.0 --port $PORT
 
 ## Automated Vercel deployment
 
-The repository includes `.github/workflows/deploy-web.yml` and `scripts/deploy_web.sh` for live web publishing once the owner adds `VERCEL_TOKEN` as a GitHub Actions secret. Codex cannot create that token or access your Vercel account, but after the secret is configured the workflow can be run manually from GitHub Actions or automatically on pushes to `main` that touch `apps/web/**`.
+The repository includes `.github/workflows/deploy-web.yml` and `scripts/deploy_web.sh` for live web publishing once the owner adds `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` as GitHub Actions secrets. Codex cannot create that token or access your Vercel account, but after the secrets are configured the workflow can be run manually from GitHub Actions or automatically on pushes to `main` that touch `apps/web/**`.
 
 Manual local deployment is also available:
 
 ```bash
 export VERCEL_TOKEN=<your-vercel-token>
+export VERCEL_ORG_ID=<your-vercel-org-id>
+export VERCEL_PROJECT_ID=<your-vercel-project-id>
 ./scripts/deploy_web.sh
 ```
+
+The deploy script uses `vercel pull`, `vercel build`, and `vercel deploy --prebuilt` so CI has a linked project configuration and fails during build before attempting to publish.
