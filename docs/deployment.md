@@ -65,3 +65,5 @@ export VERCEL_PROJECT_ID=<your-vercel-project-id>
 ```
 
 The deploy script uses `vercel pull`, `vercel build`, and `vercel deploy --prebuilt` so CI has a linked project configuration and fails during build before attempting to publish.
+
+The deploy workflow intentionally does not enable dependency caching because this scaffold does not commit a web lockfile yet; this avoids `cache-dependency-path` failures until the package manager is finalized.
